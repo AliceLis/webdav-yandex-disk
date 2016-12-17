@@ -1,4 +1,4 @@
-[submodule "vendor/curl"]
+[submodule "vendor/curl"] 
 	path = vendor/curl
 	url = https://github.com/curl/curl.git
 [submodule "vendor/pugixml"]
