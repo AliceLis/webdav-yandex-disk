@@ -1,13 +1,39 @@
+/*#***************************************************************************
+#                         __    __   _____       _____
+#   Project              |  |  |  | |     \     /  ___|
+#                        |  |__|  | |  |\  \   /  /
+#                        |        | |  | )  ) (  (     
+#                        |   /\   | |  |/  /   \  \___
+#                         \_/  \_/  |_____/     \_____|
+#
+# Copyright (C) 2016, The WDC Project, <designerror@yandex.ru>, et al.
+#
+# This software is licensed as described in the file LICENSE, which
+# you should have received as part of this distribution. 
+#
+# You may opt to use, copy, modify, merge, publish, distribute and/or sell
+# copies of the Software, and permit persons to whom the Software is
+# furnished to do so, under the terms of the LICENSE file.
+#
+# This software is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY
+# KIND, either express or implied.
+#
+############################################################################*/
+
 #include <algorithm>
 #include <fstream>
 #include <cstring>
 
 #include "callback.hpp"
 
-namespace WebDAV {
-	namespace Callback {
-		namespace Read {
-			size_t stream(char * ptr, size_t item_size, size_t item_count, void * stream) {
+namespace WebDAV
+{
+	namespace Callback
+	{
+		namespace Read
+		{
+			size_t stream(char * ptr, size_t item_size, size_t item_count, void * stream)
+			{
 				auto in_stream = (std::istream *)stream;
 				auto read_bytes = static_cast<unsigned long long>(item_size * item_count);
 				auto position = static_cast<unsigned long long>(in_stream->tellg());
@@ -19,8 +45,9 @@ namespace WebDAV {
 				in_stream->read(ptr, read_bytes);
 				return read_bytes;
 			}
-
-			size_t buffer(char * ptr, size_t item_size, size_t item_count, void * buffer) {
+	
+			size_t buffer(char * ptr, size_t item_size, size_t item_count, void * buffer)
+			{
 				auto data = (Data*)buffer;
 				auto size = static_cast<unsigned long long>(item_size * item_count);
 				auto rest_bytes = data->size - data->position;
@@ -30,16 +57,19 @@ namespace WebDAV {
 				return copied_bytes;
 			}
 		}
-
-		namespace Write {
-			size_t stream(char * ptr, size_t item_size, size_t item_count, void * stream) {
+	
+		namespace Write
+		{
+			size_t stream(char * ptr, size_t item_size, size_t item_count, void * stream)
+			{
 				auto out_stream = (std::ostream *)stream;
 				size_t write_bytes = item_size * item_count;
 				out_stream->write(ptr, write_bytes);
 				return write_bytes;
 			}
-
-			size_t buffer(char * ptr, size_t item_size, size_t item_count, void * buffer) {
+	
+			size_t buffer(char * ptr, size_t item_size, size_t item_count, void * buffer)
+			{
 				auto data = (Data*)buffer;
 				auto size = static_cast<unsigned long long>(item_size * item_count);
 				auto rest_bytes = data->size - data->position;
@@ -49,23 +79,25 @@ namespace WebDAV {
 				return copied_bytes;
 			}
 		}
-
-		namespace Append {
-			size_t buffer(char * ptr, size_t item_size, size_t item_count, void * buffer) {
+	
+		namespace Append
+		{
+			size_t buffer(char * ptr, size_t item_size, size_t item_count, void * buffer)
+			{
 				auto data = (Data*)buffer;
 				auto append_size = item_size * item_count;
 				auto new_buffer_size = data->size + append_size;
 				auto new_buffer = new char[new_buffer_size];
-				if (data->size != 0)
-					memcpy(new_buffer, data->buffer, data->size);
+				if (data->size != 0) memcpy(new_buffer, data->buffer, data->size);
 				memcpy(new_buffer + data->size, ptr, append_size);
 				delete[] data->buffer;
 				data->buffer = new_buffer;
 				data->size = new_buffer_size;
 				return append_size;
 			}
-
-			size_t stream(char * ptr, size_t item_size, size_t item_count, void * stream) {
+	
+			size_t stream(char * ptr, size_t item_size, size_t item_count, void * stream)
+			{
 				auto out_stream = (std::ostream *)stream;
 				size_t write_bytes = item_size * item_count;
 				out_stream->seekp(0, std::ios::end);
